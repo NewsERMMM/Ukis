@@ -147,6 +147,7 @@ function preload() {
 }
 
 function setup() {
+    fullscreen(true)
     allSprites.rotationLock = true
     backgroundAudio.play()
     backgroundAudio.loop()
