@@ -591,7 +591,7 @@ function mainMenu() {
     camera.zoom = 3
     camera.x = menuSprite.x, camera.y = menuSprite.y
 
-    if (playButton.mouse.pressing()) {
+    if (mouse.pressing()) {
         console.log("a")
         playState = 1
         menuSprite.remove(), playButton.remove()
