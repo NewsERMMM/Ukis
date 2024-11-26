@@ -312,7 +312,7 @@ function setup() {
 
 function draw() {
     background(53)
-    fullscreen(true)
+    //fullscreen(true)
     if (playState == 0) {
         mainMenu();
     }
@@ -430,7 +430,7 @@ function pickup() {
         distance = dist(player.x, player.y, gameWorldItems[i].x, gameWorldItems[i].y)
     }
     //console.log(distance)
-    if (kb.pressed('f') && distance <= 150 && textBoxOpen == false) {
+    if (kb.pressed('f') && distance <= 90 && textBoxOpen == false) {
         textBoxOpen = true;
         interactType = 'takingItem'
         player.freeze = true
@@ -460,7 +460,6 @@ function pickup() {
 // opening sequence: close up of cats face, then zoom out perchance
 
 function pauseGame() {
-    //interactBox.style("display", "flex");
     gameState = "paused";
     allSprites.sleeping = true;
     player.ani.stop();
@@ -468,7 +467,6 @@ function pauseGame() {
 }
 
 function unpauseGame() {
-    //interactBox.style("display", "flex");
     gameState = "running";
     allSprites.sleeping = false;
     player.freeze = false
@@ -482,7 +480,6 @@ function interactBox() {
     textBox.image = textBoxImg
     textBox.image.offset.y = 25
     textBox.textColor = 'white'
-    //textBox.text = message
 
     optionBox = new Sprite(textBox.x + 70, textBox.y, 200, 120, 'k')
     optionBox.image = optionBoxImg
@@ -594,11 +591,11 @@ function mainMenu() {
     camera.zoom = 3
     camera.x = menuSprite.x, camera.y = menuSprite.y
 
-    if (mouse.pressing()) {
+    if (playButton.mouse.pressing()) {
+        console.log("a")
         playState = 1
         menuSprite.remove(), playButton.remove()
     } else {
-        //console.log("ough")
     }
 }
 
