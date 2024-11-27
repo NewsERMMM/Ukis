@@ -10,27 +10,30 @@ let gameWorldItems = []
 let insideTile, outsideTile, inspectTile;
 let interactType = 'none', playState = 0;
 let textBoxOpen = false;
+let playButton
 
 function keyPressed() {
     if (keyCode == 73) {
         if (toggle == 0) {
             toggle = 1
+            interactType = 'inspecting'
         }
         else if (toggle == 1) {
             toggle = 0
+            interactType = 'none'
         }
     }
 }
 
 mapStorage = [ // map array, that should hold all the shapes, ID's and names of the maps
     {
-        mapID: '1', mapName: "StarterMap", mapArray: [
+        mapID: 1, mapName: "StarterMap", mapArray: [
             '11111111111',
             '1111w1w1111',
             '1fffffffff1',
             '1fgffffgff1',
             '1fffffffff1',
-            '1ffgffffff3',
+            '1fctgfffff3',
             '1fffffffff1',
             '1gffffffff1',
             '1ffgffgfff1',
@@ -40,39 +43,40 @@ mapStorage = [ // map array, that should hold all the shapes, ID's and names of 
     {
         mapID: 2, mapName: "Map2", mapArray: [
             '11111111111',
-            '1fffffffff1',
-            '1fffffffff1',
-            '1fffffffff1',
-            '1fffffffff1',
-            'mffffffffFn',
-            '1fffffffFF1',
-            '1ffffffFFF1',
-            '11111111111'
+            '11p11111w11',
+            '1ffffvffff1',
+            '1fRgfgffff1',
+            '1fgfgffffg1',
+            '1fffffgfff1',
+            'mffgffffgFn',
+            '1ffgfgfgRF1',
+            '1fgffffFFR1',
+            '11111o11111'
         ]
     },
     {
         mapID: 3, mapName: "outside", mapArray: [
             '12222222222',
-            '1FFRFFFFFF2',
-            '1FFFFFFFFR2',
-            '1FFRFFFFFF2',
-            '1FFFFFFFFR2',
-            'bFFFRRFRFF2',
-            '1FRFFFFRFR2',
-            '1FFFFFRFFF2',
+            '1FFRFFRFFF4',
+            '1FFRFRFRFR4',
+            '1FFRFFRFFF4',
+            '1FRFRFFRFR4',
+            'bFFRRRFRFF4',
+            '1FRRFFFRFR4',
+            '1FFFRFRFFF4',
             '12222222222'
         ]
     },
     {
         mapID: 4, mapName: "childBedroom", mapArray: [
             '11111111111',
-            '1FFFFFFFFF1',
-            '1FFFFFFFFF1',
-            '1FFFFFFFFF1',
-            '1FFFFFFFFF1',
-            'bFFFFFFFFF1',
-            '1FFFFFFFFF1',
-            '1FFFFFFFFF1',
+            '11111l11111',
+            '1fgffgffgf1',
+            '1ffgffgfff1',
+            '1ffgffggff1',
+            '1fgffgfgff1',
+            '1fffffgfff1',
+            '1fgfgfggfg1',
             '11111111111'
         ]
     },
@@ -108,14 +112,17 @@ mapStorage = [ // map array, that should hold all the shapes, ID's and names of 
 
 function preload() {
     backgroundAudio = loadSound('backgroundAmbiance.mp3')
-    img = loadImage('img.png')
+    img = loadImage('inspect1.png')
+    img2 = loadImage('inspect2.png')
     //spriteImg = loadImage('no.png')
     wall_text = loadImage('wall_text.png')
     playerSpriteSheet = loadImage('spritesheetfinal(1).png')
     floor_text = loadImage('floor_text(1).png'), floor_text2 = loadImage('floor_text2.png')
     vingnetteOverlay = loadImage('oralvignette(2).png')
     rocks = loadImage('rocks.png')
+    rockSide = loadImage('rock_side.png')
     dirt1 = loadImage('dirt_text.png'), dirt2 = loadImage('dirt_text2.png');
+    painting = loadImage('painting.png')
     keyImg = loadImage('key.png')
     windowTex = loadImage('window_text.png')
     textBoxImg = loadImage('textBox.png')
@@ -126,6 +133,7 @@ function preload() {
 
     chairImg = loadImage('chair.png')
     tableImg = loadImage('table.png')
+    tvImg = loadImage('tv.png')
 
 
     player = new Sprite(600, 600, 90, 110, 'd');
@@ -144,10 +152,18 @@ function preload() {
     player.anis.scale = 1
     player.layer = 2
 
+    menuSprite = new Sprite(5000, 100, 40, 40, 's')
+    menuSprite.image = mainMenuBg;
+    menuSprite.image.scale = 2
+
+    playButton = new Sprite(menuSprite.x + 50, menuSprite.y + 70, 280, 100, 'k')
+    playButton.image = textBoxImg
+    playButton.image.offset.y = 25
+
+
 }
 
 function setup() {
-    fullscreen(true)
     allSprites.rotationLock = true
     backgroundAudio.play()
     backgroundAudio.loop()
@@ -175,6 +191,14 @@ function setup() {
     outsideTile.color = 'green'
     outsideTile.layer = 4, outsideTile.image = rocks
 
+    outsideTile2 = new Group();
+    outsideTile2.w = 60;
+    outsideTile2.h = 60;
+    outsideTile2.tile = 4;
+    outsideTile2.collider = 's';
+    outsideTile2.color = 'green'
+    outsideTile2.layer = 4, outsideTile2.image = rockSide
+
     windowTile = new Group();
     windowTile.w = 60;
     windowTile.h = 60;
@@ -183,6 +207,15 @@ function setup() {
     windowTex.scale = 0.12
     windowTile.collider = 's';
     windowTile.layer = 4
+
+    paintingTile = new Group()
+    paintingTile.w = 60;
+    paintingTile.h = 60;
+    paintingTile.tile = 'p';
+    paintingTile.image = painting
+    paintingTile.scale = 0.8
+    paintingTile.collider = 's';
+    paintingTile.layer = 4
 
     insideFloor = new Group()
     insideFloor.w = 60;
@@ -220,6 +253,7 @@ function setup() {
 
     doors = new Group()
     doors.w = 60, doors.h = 60
+    doors.image = doorImg
 
     door1 = new doors.Group()
     door1.mID = 1
@@ -252,6 +286,13 @@ function setup() {
     door5.mID = 5, door5.layer = 2
     door5.collider = 's'
     door5.image = doorImg
+    door5.tile = 'o'
+
+    door6 = new doors.Group()
+    door6.mID = 5, door6.layer = 2
+    door6.collider = 's'
+    door6.image = doorImg
+    door6.tile = 'l'
 
     //\\\\\\\\\\\\\\\\\\\\\\\\\\ DOORS /////////////////////////////
 
@@ -262,11 +303,22 @@ function setup() {
     //\\\\\\\\\\\\\\\\\\\\\\\\\\ OBJECTS /////////////////////////////
 
     objects = new Group()
-    chair = new objects.Group()
-    chair.w = 60, chair.h = 60, chair.collider = 's'
-    chair.image = chairImg
-    chair.tile = 'c'
+    objects.w = 60, objects.h = 60
 
+    chair = new objects.Group()
+    chair.collider = 's'
+    chair.image = chairImg, chair.layer = 1
+    chair.tile = 'c', chair.scale = 0.12
+
+    table = new objects.Group()
+    table.collider = 's'
+    table.image = tableImg, table.layer = 1
+    table.tile = 't', table.scale = 0.12
+
+    tv = new objects.Group()
+    tv.collider = 's'
+    tv.image = tvImg, tv.layer = 1
+    tv.tile = 'v', tv.scale = 0.12
 
 
 
@@ -304,7 +356,7 @@ function setup() {
     key1.pickable = true
     gameWorldItems.push(key1)
 
-    key2 = new Sprite(1000, 1000, 20, 20, 'n')
+    key2 = new Sprite(4725, 4920, 20, 20, 's')
     key2.image = keyImg
     key2.layer = 1
 }
@@ -312,8 +364,10 @@ function setup() {
 
 
 function draw() {
+    clear()
+    windowResized()
     background(53)
-    //fullscreen(true)
+    fullscreen(true)
     if (playState == 0) {
         mainMenu();
     }
@@ -347,10 +401,22 @@ async function mapSwitch() {
         currentMap.remove()
         player.x = 350, player.y = 560;
         currentMap = new Tiles(mapStorage[2].mapArray, 255, 255, insideTile.w, insideTile.h)
+        currentMapID = mapStorage[2].mapID
     } if (kb.pressing('e') && player.collides(door4)) {
         currentMap.remove()
         player.x = 755, player.y = 530;
         currentMap = new Tiles(mapStorage[1].mapArray, 255, 255, insideTile.w, insideTile.h)
+        currentMapID = mapStorage[1].mapID
+    } if (kb.pressing('e') && player.collides(door5)) {
+        currentMap.remove()
+        player.x = 755, player.y = 530;
+        currentMap = new Tiles(mapStorage[3].mapArray, 255, 255, insideTile.w, insideTile.h)
+        currentMapID = mapStorage[3].mapID
+    } if (kb.pressing('e') && player.collides(door6)) {
+        currentMap.remove()
+        player.x = 755, player.y = 530;
+        currentMap = new Tiles(mapStorage[1].mapArray, 255, 255, insideTile.w, insideTile.h)
+        currentMapID = mapStorage[1].mapID
     }
 }
 
@@ -407,20 +473,30 @@ function playerAnimation() {
 
 async function inspect() {
     if (toggle == 1 && currentMapID == 2) {
+        interactType = 'inspecting'
         freeze = true
         imgSprite.image = img
         camera.x = imgSprite.x, camera.y = imgSprite.y
-        imgSprite.image.scale = 3.25
+        imgSprite.image.scale = 1.5
+        imgSprite.offset.y = -30
         imgSprite.layer = 0
-    } else if (toggle == 1 && currentMap == 3) {
+        key2.x = 4725, key2.y = 4920
+        if (key2.mouse.pressing()) {
+            inventory.push(key2)
+            key2.remove()
+            console.log(inventory)
+        }
+    } else if (toggle == 1 && currentMapID == 3) {
         freeze = true
-        imgSprite.image = img
+        imgSprite.image = img2
         camera.x = imgSprite.x, camera.y = imgSprite.y
-        imgSprite.image.scale = 3.25
+        imgSprite.image.scale = 1.5
         imgSprite.layer = 0
+        key2.x = 3000, key2.y = 3000
     }
     else {
         toggle = 0
+        interactType = 'none'
     }
 }
 
@@ -501,102 +577,16 @@ function interactBox() {
     player.freeze = true;
 }
 
-// function doorInteract() {
-//     if (kb.pressed('e')) {
-//         let doorFound = null;
-
-//         if (player.colliding(doors)) {
-//             doorFound = doors, console.log("aaa");
-//         }
-//         else if (player.collides(door1)) {
-//             doorFound = door1;
-//         }
-//         else if (player.collides(door2)) {
-//             doorFound = door2;
-//         }
-//         else if (player.collides(door3)) {
-//             doorFound = door3;
-//         }
-
-//         if (doorFound) { // basically if doorfound != null, this if statement goes ahead
-//             if (doorFound.mID === 1 || doorFound.mID === 4) { // locked doors
-//                 if (inventory.includes(key1)) { // condition check
-//                     interactType = 'openDoor'
-//                     interactBox("You have the key."), () => {
-//                         openDoor(doorFound);
-//                     }
-//                 } else {
-//                     interactBox("you need a key")
-//                 }
-//             } else {
-//                 interactType = 'openDoor';
-//                 interactBox("click to go through door", () => {
-//                     openDoor(doorFound);
-//                 });
-//             }
-//         }
-//     }
-// }
-
-// function doorInt() {
-//     let doorFound = null;
-//     if (kb.pressed('e')) {
-//         interactType = 'openDoor'
-//         interactBox()
-
-//         if (player.colliding(doors)) {
-//             doorFound = doors //, console.log("aaa");
-//         }
-//         else if (player.collides(door1)) {
-//             doorFound = door1;
-//         }
-//         else if (player.collides(door2)) {
-//             doorFound = door2;
-//         }
-//         else if (player.collides(door3)) {
-//             doorFound = door3;
-//         }
-//     }
-
-//     if (doorFound) {
-//         console.log(interactType)
-//         console.log(doorFound.mID)
-//         if (interactType == 'openDoor' && doorFound.mID == 1) {
-//             if (inventory.includes(key1)) {
-//                 if (optionBox.mouse.pressing()) {
-//                     console.log("aa")
-//                 }
-//             } else {
-//                 console.log("you need a key to open this door")
-//             }
-//      
-//
-//
-//         if (interactType === 'opendoor') {
-//             console.log("pingas")
-//         }
-//     }
-// }
-
 function mainMenu() {
-    menuSprite = new Sprite(5000, 100, 40, 40, 's')
-    menuSprite.image = mainMenuBg
-    menuSprite.layer = 1, menuSprite.image.scale = 2
-
-    playButton = new Sprite(menuSprite.x + 50, menuSprite.y + 70, 200, 120, 'k')
-    playButton.image = textBoxImg
-    playButton.image.offset.y = 25
-
+    camera.zoom = 3
     playButton.scale = 0.3;
     playButton.text = "play", playButton.textColor = 'white'
-    camera.zoom = 3
     camera.x = menuSprite.x, camera.y = menuSprite.y
+    //playButton.debug = mouse.pressing()
 
-    if (mouse.pressing()) {
-        console.log("a")
+    if (playButton.mouse.pressing()) {
         playState = 1
         menuSprite.remove(), playButton.remove()
-    } else {
     }
 }
 
@@ -606,9 +596,6 @@ function game() {
     new Canvas(windowWidth, windowHeight)
     background(0)
     noSmooth()
-
-
-
 
 
     camera.zoom = 2.7
@@ -621,14 +608,11 @@ function game() {
     // cursor show / hide
     if (interactType === 'none') {
         noCursor()
-    } else if (interactType === 'takingItem' || interactType === 'openDoor') {
+    } else if (interactType === 'takingItem' || interactType === 'openDoor' || interactType === 'inspecting') {
         cursor()
     }
 
     // pausing and unpausing 
-
-    //doorInteract()
-    //doorInt()
 
     // camera bounds 
 
@@ -655,7 +639,4 @@ function game() {
     }
 
     vingnette.x = player.x, vingnette.y = player.y
-
-    //allSprites.debug = mouse.pressing()
-    // camera.x = Math.Clamp(camera.x, RectangleworldBounds.x + viewPort.Width * 0.5, worldBounds.X + worldBounds.Width - viewPort.Width * 0.5f);
 }
