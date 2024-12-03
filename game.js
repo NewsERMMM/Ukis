@@ -33,7 +33,7 @@ mapStorage = [ // map array, that should hold all the shapes, ID's and names of 
             '1fffffffff1',
             '1fgffffgff1',
             '1fffffffff1',
-            '1fctgfffff3',
+            '1fcfgfffff3',
             '1fffffffff1',
             '1gffffffff1',
             '1ffgffgfff1',
@@ -47,10 +47,10 @@ mapStorage = [ // map array, that should hold all the shapes, ID's and names of 
             '1ffffvffff1',
             '1fRgfgffff1',
             '1fgfgffffg1',
-            '1fffffgfff1',
+            '1fffffgfgf1',
             'mffgffffgFn',
             '1ffgfgfgRF1',
-            '1fgffffFFR1',
+            '1fgcfffFFR1',
             '11111o11111'
         ]
     },
@@ -75,7 +75,7 @@ mapStorage = [ // map array, that should hold all the shapes, ID's and names of 
             '1ffgffgfff1',
             '1ffgffggff1',
             '1fgffgfgff1',
-            '1fffffgfff1',
+            '1fffffgcff1',
             '1fgfgfggfg1',
             '11111111111'
         ]
@@ -131,7 +131,7 @@ function preload() {
     doorImg = loadImage('door.png')
     mainMenuBg = loadImage('mainMenuBackground.png')
 
-    chairImg = loadImage('chair.png')
+    chairImg = loadImage('chair(1).png')
     tableImg = loadImage('table.png')
     tvImg = loadImage('tv.png')
 
