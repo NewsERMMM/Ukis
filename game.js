@@ -305,10 +305,10 @@ function setup() {
     objects = new Group()
     objects.w = 60, objects.h = 60
 
-    chair = new objects.Group()
-    chair.collider = 's'
-    chair.image = chairImg, chair.layer = 1
-    chair.tile = 'c', chair.scale = 0.12
+    chair = new objects.Group();
+    chair.collider = 's';
+    chair.image = chairImg, chair.layer = 1;
+    chair.tile = 'c';
 
     table = new objects.Group()
     table.collider = 's'
