@@ -382,7 +382,6 @@ function windowResized() {
 }
 
 async function mapSwitch() {
-    //distance = dist(player.x, player.y, doors.x, doors.y)
     for (let i = 0; i <= inventory.length; i++)
         if (kb.pressing('e') && player.collides(door1) && inventory[i] == key1) {
             currentMap.remove()
@@ -570,14 +569,14 @@ function interactBox() {
         textBox.text = "Pick up?"
         optionBox.text = "Yes"
         textBox.text.align = 'left'
-    } else if (interactType === 'openDoor') {
+    } else if (interactType === 'openDoor') { // dictiation of what the text boxes need to say
         textBox.text = "Go through door?"
         optionBox.text = "Yes"
     }
     player.freeze = true;
 }
 
-function mainMenu() {
+function mainMenu() { // main menu, first thing players see. the camera is placed on it and is kept far away from the actual games map.
     camera.zoom = 3
     playButton.scale = 0.3;
     playButton.text = "play", playButton.textColor = 'white'
@@ -605,7 +604,7 @@ function game() {
     mapSwitch()
     pickup()
 
-    // cursor show / hide
+    // cursor show / hide. only appears when player is doing something that necessitates it. 
     if (interactType === 'none') {
         noCursor()
     } else if (interactType === 'takingItem' || interactType === 'openDoor' || interactType === 'inspecting') {
@@ -614,7 +613,7 @@ function game() {
 
     // pausing and unpausing 
 
-    // camera bounds 
+    // camera bounds, where if the player crosses a certain coordinate (x or y), camera no longer follows them
 
     if (player.y <= 456) {
         camera.y = 456
