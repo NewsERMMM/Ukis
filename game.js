@@ -12,8 +12,8 @@ let interactType = 'none', playState = 0;
 let textBoxOpen = false;
 let playButton
 
-function keyPressed() {
-    if (keyCode == 73) {
+function keyPressed() { // toggle for room inspecting
+    if (keyCode == 73) { // I key
         if (toggle == 0) {
             toggle = 1
             interactType = 'inspecting'
@@ -26,7 +26,7 @@ function keyPressed() {
 }
 
 mapStorage = [ // map array, that should hold all the shapes, ID's and names of the maps
-    {
+    { // map name is not used, and is there as a discriptor, however mapID and Array are used to identify and display maps
         mapID: 1, mapName: "StarterMap", mapArray: [
             '11111111111',
             '1111w1w1111',
@@ -142,11 +142,11 @@ function preload() {
     player.friction = 0
     player.addAnis({
         idle: { row: 0, frames: 4 },
-        bIdle: { row: 3 },
-        fWalk: { row: 1, frames: 9 },
-        bWalk: { row: 2, frames: 8 },
-        sideWalkR: { row: 4, frames: 11 },
-        sideWalkL: { row: 5, frames: 11 }
+        bIdle: { row: 3 }, // back idle
+        fWalk: { row: 1, frames: 9 }, // forward walk
+        bWalk: { row: 2, frames: 8 }, // back walk
+        sideWalkR: { row: 4, frames: 11 }, // side walk right
+        sideWalkL: { row: 5, frames: 11 } // side walk left
     })
     playerSpriteSheet.scale = 3
     player.anis.scale = 1
@@ -368,7 +368,8 @@ function draw() {
     windowResized()
     background(53)
     fullscreen(true)
-    if (playState == 0) {
+    
+    if (playState == 0) { // if statement that indicates wherever or not the player is in the game. 
         mainMenu();
     }
 
@@ -378,20 +379,20 @@ function draw() {
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
+    resizeCanvas(windowWidth, windowHeight); // resizes the canvas when depending on the size of the tab
 }
 
 async function mapSwitch() {
     for (let i = 0; i <= inventory.length; i++)
-        if (kb.pressing('e') && player.collides(door1) && inventory[i] == key1) {
-            currentMap.remove()
-            currentMap = new Tiles(mapStorage[1].mapArray, 255, 255, insideTile.w, insideTile.h)
-            currentMapID = mapStorage[1].mapID
-            player.y = 550, player.x = 350;
+        if (kb.pressing('e') && player.collides(door1) && inventory[i] == key1) { 
+            currentMap.remove() // current map is 'starter map' 
+            currentMap = new Tiles(mapStorage[1].mapArray, 255, 255, insideTile.w, insideTile.h) // replaced by 'Map2'
+            currentMapID = mapStorage[1].mapID // sets the map id to the next one
+            player.y = 550, player.x = 350; // teleports play to be in front of the door
         } else if (kb.pressing('e') && inventory[i] != key1) {
             console.log("You need a key!")
         }
-    if (kb.pressing('e') && player.collides(door2)) {
+    if (kb.pressing('e') && player.collides(door2)) { // repeat for all maps 
         currentMap.remove()
         player.y = 550, player.x = 750;
         currentMap = new Tiles(mapStorage[0].mapArray, 255, 255, insideTile.w, insideTile.h)
@@ -475,7 +476,7 @@ async function inspect() {
         interactType = 'inspecting'
         freeze = true
         imgSprite.image = img
-        camera.x = imgSprite.x, camera.y = imgSprite.y
+        camera.x = imgSprite.x, camera.y = imgSprite.y // sends the camera to the location of the inspect sprite at 5000, 5000
         imgSprite.image.scale = 1.5
         imgSprite.offset.y = -30
         imgSprite.layer = 0
@@ -487,11 +488,11 @@ async function inspect() {
         }
     } else if (toggle == 1 && currentMapID == 3) {
         freeze = true
-        imgSprite.image = img2
+        imgSprite.image = img2 // second inspect image
         camera.x = imgSprite.x, camera.y = imgSprite.y
         imgSprite.image.scale = 1.5
         imgSprite.layer = 0
-        key2.x = 3000, key2.y = 3000
+        key2.x = 3000, key2.y = 3000 // in case the player has not picked up the key but inspects in the outside area, key is moved away
     }
     else {
         toggle = 0
@@ -538,14 +539,14 @@ function pickup() {
 function pauseGame() {
     gameState = "paused";
     allSprites.sleeping = true;
-    player.ani.stop();
-    player.freeze = true
+    player.ani.stop(); // animations stop, player should be unable to switch animations 
+    player.freeze = true // player cannot move
 }
 
 function unpauseGame() {
     gameState = "running";
     allSprites.sleeping = false;
-    player.freeze = false
+    player.freeze = false 
     player.ani.play();
 }
 
@@ -564,7 +565,7 @@ function interactBox() {
     optionBox.layer = 101
     optionBox.textColor = 'white'
 
-    textBox.overlaps(player), optionBox.overlaps(player);
+    textBox.overlaps(player), optionBox.overlaps(player); // interact and option boxes go on top of the player in case they are placed about them
     if (interactType === 'takingItem') {
         textBox.text = "Pick up?"
         optionBox.text = "Yes"
@@ -581,8 +582,6 @@ function mainMenu() { // main menu, first thing players see. the camera is place
     playButton.scale = 0.3;
     playButton.text = "play", playButton.textColor = 'white'
     camera.x = menuSprite.x, camera.y = menuSprite.y
-    //playButton.debug = mouse.pressing()
-
     if (playButton.mouse.pressing()) {
         playState = 1
         menuSprite.remove(), playButton.remove()
@@ -595,7 +594,6 @@ function game() {
     new Canvas(windowWidth, windowHeight)
     background(0)
     noSmooth()
-
 
     camera.zoom = 2.7
 
@@ -610,8 +608,6 @@ function game() {
     } else if (interactType === 'takingItem' || interactType === 'openDoor' || interactType === 'inspecting') {
         cursor()
     }
-
-    // pausing and unpausing 
 
     // camera bounds, where if the player crosses a certain coordinate (x or y), camera no longer follows them
 
